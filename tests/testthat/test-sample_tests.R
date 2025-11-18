@@ -6,11 +6,11 @@ test_that("Number of blocks is conserved", {
     group_by(species, island) |>
     count(species, island)
 
-  sampled_2 <- penguins |>
+  sampled_blocks <- penguins |>
     group_by(species, island) |>
     slice_block(n = 2)
 
-  check_frame <- sampled_2 |>
+  check_frame <- sampled_blocks |>
     count(species, island) |>
     left_join(original_blocks, by = c("species", "island"))
 
