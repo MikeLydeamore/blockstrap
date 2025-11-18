@@ -1,18 +1,17 @@
 library(dplyr)
-library(palmerpenguins)
 
 test_that("Number of blocks is conserved", {
-  original_blocks <- penguins |>
-    group_by(species, island) |>
-    count(species, island)
+  original_blocks <- ToothGrowth |>
+    group_by(supp, dose) |>
+    count(supp, dose)
 
-  sampled_blocks <- penguins |>
-    group_by(species, island) |>
+  sampled_blocks <- ToothGrowth |>
+    group_by(supp, dose) |>
     slice_block(n = 2)
 
   check_frame <- sampled_blocks |>
-    count(species, island) |>
-    left_join(original_blocks, by = c("species", "island"))
+    count(supp, dose) |>
+    left_join(original_blocks, by = c("supp", "dose"))
 
   expect_true(all(check_frame$n.x == check_frame$n.y))
 })
