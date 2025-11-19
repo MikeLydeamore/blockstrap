@@ -1,0 +1,85 @@
+---
+title: "blockstrap"
+output: github_document
+---
+
+<!-- README.Rmd is generated from this file. Run devtools::build_readme() to knit. -->
+
+# blockstrap <img src="https://img.shields.io/badge/status-experimental-orange" alt="Status: experimental"/>
+
+Sample complete groups ("blocks") from a grouped data frame. This package implements a simple *block bootstrap* style sampler: instead of sampling individual rows, you sample entire groups preserving the intra-group structure.
+
+> Assumption: The package name in `DESCRIPTION` is `blockstrap` (repository folder is `flockstrapr`). This README uses the `blockstrap` name; adjust if the package is renamed.
+
+## Installation
+
+```r
+# install.packages("devtools")
+remotes::install_github("MikeLydeamore/flockstrapr")
+```
+
+## Motivation
+
+When observations belonging to the same experimental unit are spread across multiple rows (e.g. multiple measurements per subject, dose combinations, time series segments), ordinary row-wise sampling breaks these units apart. A block sampler keeps units intact by sampling at the group level.
+
+## Core function
+
+`slice_block()` works on a *grouped* data frame. If you call it on an ungrouped data frame, it throws a helpful error.
+
+Key arguments:
+
+- `n`: number of groups (blocks) to sample.
+- `replace`: sample with replacement? Needed when `n` exceeds number of groups.
+- `weight_by`: optional expression (unquoted) evaluated per-group to weight sampling probabilities.
+- `...`: passed to base `sample()` allowing e.g. `set.seed()` beforehand or other sampling tweaks.
+
+## Basic example
+
+We use the built-in `ToothGrowth` dataset and treat each supplement-dose combination as a block.
+
+```{r, message=FALSE, warning=FALSE}
+library(dplyr)
+library(blockstrap)
+
+set.seed(1)
+ToothGrowth |>
+  group_by(supp, dose) |>
+  slice_block(n = 2)
+```
+
+
+## Sampling with replacement
+
+If you want to sample more groups than exist, or allow repeats:
+
+```{r}
+ToothGrowth |>
+  group_by(supp, dose) |>
+  slice_block(n = 10, replace = TRUE) |>
+  count(supp, dose)
+```
+
+Repeated blocks will appear multiple times (row counts summed accordingly).
+
+## Weighted sampling
+
+Weight blocks by a statistic, e.g. mean tooth length, to favor larger mean response groups:
+
+```{r}
+set.seed(42)
+weighted <- ToothGrowth |>
+  group_by(supp, dose) |>
+  slice_block(n = 3, weight_by = mean(len))
+```
+
+You can verify weighting bias by repeating and tallying frequencies:
+
+```{r}
+set.seed(99)
+rep_draws <- replicate(500, {
+  ToothGrowth |> group_by(supp, dose) |> slice_block(n = 3, weight_by = mean(len)) |> distinct(supp, dose)
+}, simplify = FALSE)
+
+freqs <- bind_rows(rep_draws) |> count(supp, dose, name = "times") |> arrange(desc(times))
+freqs
+```
