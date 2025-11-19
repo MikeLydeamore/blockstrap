@@ -12,11 +12,13 @@ knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
 )
+
+devtools::load_all()
+
 ```
 
-```{r setup}
-library(dplyr)
-#library(blockstrap)
+```{r message=FALSE}
+library(dplyr) 
 ```
 # Introduction to Blockstrap 
 Blockstrap is an R package developed for resampling data structures that naturally come in blocks. A common example is the line-listed hospital admission data, where each subject may appear in multiple rows. These rows can be grouped into meaningful units such as a sequence of visits by the same subject that occur close together. We refer to each such grouping as a block.
@@ -30,12 +32,14 @@ In this document, we demonstrate how to:
 - Perform block bootstrap using slice_block() function
 
 ## Generate an example dataset 
-For illustration, we use the create_fake_subjectDB() function from the HospitalNetwork package to generate a fake subject database containing admission/discharge records.
-```{r}
+For illustration, we use the create_fake_subjectDB() function from the HospitalNetwork package to generate a fake subject database containing admission/discharge records. Note that this dataset includes $100$ subjects and each subject can have more than one record. 
+
+```{r message=FALSE}
 library(HospitalNetwork)
 set.seed(1)
-df<- create_fake_subjectDB()
-df
+df <- create_fake_subjectDB()
+
+head(df)
 ```
 Here, df contains four columns: 
 
@@ -51,23 +55,46 @@ We define a block as a sequence of visits by the same subject that occur close t
 - The difference in days between the previous discharge (`Ddate`) and the current admission (`Adate`) exceeds 40 days
 
 ```{r}
-df2<- df |>  
+df2 <- df |>  
   group_by(sID) |>
-  mutate( Adate = as.Date(Adate),
-          Ddate = as.Date(Ddate)) |>
+  mutate(Adate = as.Date(Adate),
+         Ddate = as.Date(Ddate)) |>
   arrange(Adate, .by_group= TRUE) |>
-  mutate( diff_time = Adate - lag(Ddate),
-          is_start = is.na(diff_time) | diff_time > 40,
-          idx_within_sid = cumsum(is_start),
-          idx_block = as.factor(paste0(sID, "_", idx_within_sid)))
+  mutate(diff_time = Adate - lag(Ddate),
+         is_start = is.na(diff_time) | diff_time > 40,
+         idx_within_sid = cumsum(is_start),
+         idx_block = as.factor(paste0(sID, "_",   idx_within_sid)))
 
-df2
+head(df2)
+
 ```
 The column `idx_block` is a factor that identifies which block each row belongs to. Note that rows that share the identical entries in `idx_block` belong to the same block. 
 
+```{r}
+nrow(distinct(df2,idx_block))
+```
+There are $`r nrow(distinct(df2, idx_block))`$ unique blocks in the dataset.
+
+
 ## Block bootstrap
-With the block IDs defined, we use the slice_block() function to perform block bootstrap.
+With the block IDs defined, we use the slice_block() function to perform block bootstrap. Here, we sample 10 blocks with replacement:
 
+```{r}
+sample1 <- df2 |>
+  group_by(idx_block) |>
+  slice_block(n = 10, replace=TRUE)
 
-In this example, 
+head(sample1)
+```
 
+`sample1` is the resulting dataset sampled using block bootstrap and can be used for further statistical analysis. The example above demonstrates sampling with equal weights, but the slice_block() function also allows for weighted sampling. For instance, we use the block size to give larger blocks a higher probability of being selected to generate `sample2`.
+
+```{r}
+sample2 <- df2 |>
+  group_by(idx_block) |>
+  slice_block(n = 10, replace=TRUE, weight_by = n())
+
+sample2
+```
+
+ 
