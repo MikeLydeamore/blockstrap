@@ -5,7 +5,7 @@ Authors@R: c(
         person("Michael", "Lydeamore", , "michael.lydeamore@monash.edu", role = c("aut", "cre"), comment = c(ORCID = "0000-0002-3980-268X")),
         person("Cash", "Looi", , "cash.looi@monash.edu", role = c("aut"), comment = c("ORCID" = "0009-0002-7219-2753")),
         person("Kenyon", "Ng", , "kenyon.ng@gmail.com", role = c("aut"), comment = c("ORCID" = "0000-0002-6315-9831")),
-        person("Mitchell", "O'Hara-Wild", "mail@mitchelloharawild.com", role=c("aut"), comment=c(ORCID = "0000-0001-6729-7695"))
+        person("Mitchell", "O'Hara-Wild", , "mail@mitchelloharawild.com", role=c("aut"), comment=c(ORCID = "0000-0001-6729-7695"))
         )
 Description: Sample dataframes by group, in the form of a 'block bootstrap'. Entire groups are returned allowing for a single 'observation' to span multiple rows of the dataframe.
 License: MIT + file LICENSE
