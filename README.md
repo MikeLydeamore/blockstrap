@@ -1,18 +1,13 @@
 blockstrap
+<img src='https://img.shields.io/badge/status-experimental-orange' alt='Status: experimental'/>
 ================
 
 <!-- README.Rmd is generated from this file. Run devtools::build_readme() to knit. -->
-
-# blockstrap <img src="https://img.shields.io/badge/status-experimental-orange" alt="Status: experimental"/>
 
 Sample complete groups (“blocks”) from a grouped data frame. This
 package implements a simple *block bootstrap* style sampler: instead of
 sampling individual rows, you sample entire groups preserving the
 intra-group structure.
-
-> Assumption: The package name in `DESCRIPTION` is `blockstrap`
-> (repository folder is `flockstrapr`). This README uses the
-> `blockstrap` name; adjust if the package is renamed.
 
 ## Installation
 
@@ -41,8 +36,7 @@ Key arguments:
   groups.
 - `weight_by`: optional expression (unquoted) evaluated per-group to
   weight sampling probabilities.
-- `...`: passed to base `sample()` allowing e.g. `set.seed()` beforehand
-  or other sampling tweaks.
+- `...`: passed to base `sample()`
 
 ## Basic example
 
