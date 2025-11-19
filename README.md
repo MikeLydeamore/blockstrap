@@ -13,7 +13,7 @@ intra-group structure.
 
 ``` r
 # install.packages("devtools")
-remotes::install_github("MikeLydeamore/flockstrapr")
+remotes::install_github("numbats/blockstrap")
 ```
 
 ## Motivation
