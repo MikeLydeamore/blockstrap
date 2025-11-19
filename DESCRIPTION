@@ -1,9 +1,9 @@
 Package: blockstrap
-Title: What the Package Does (One Line, Title Case)
+Title: Sample dataframes by a group
 Version: 0.0.0.9000
 Authors@R: 
-    person("First", "Last", , "first.last@example.com", role = c("aut", "cre"))
-Description: What the package does (one paragraph).
+    person("Michael", "Lydeamore", , "michael.lydeamore@monash.edu", role = c("aut", "cre"))
+Description: Sample dataframes by group, in the form of a 'block bootstrap'. Entire groups are returned allowing for a single 'observation' to span multiple rows of the dataframe..
 License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
@@ -12,5 +12,7 @@ Suggests:
     testthat (>= 3.0.0)
 Config/testthat/edition: 3
 Imports: 
+    cli,
     dplyr,
+    rlang,
     vctrs
